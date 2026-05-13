@@ -4,7 +4,7 @@ phases:
   install:
     commands:
       - echo Installing Trivy for Container Scanning...
-      - rpm -ivh https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.rpm
+      - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b . v0.48.3
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -16,7 +16,7 @@ phases:
       - echo Pulling the Docker image...
       - docker pull $REPOSITORY_URI:$IMAGE_TAG
       - echo Running Trivy vulnerability scanner in CI mode...
-      - trivy image --no-progress --exit-code 1 --severity CRITICAL,HIGH $REPOSITORY_URI:$IMAGE_TAG
+      - ./trivy image --no-progress --exit-code 1 --severity CRITICAL,HIGH $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Scan completed successfully.

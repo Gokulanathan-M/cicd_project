@@ -1,11 +1,11 @@
 # Use a secure base image
-FROM node:20-alpine AS builder
+FROM public.ecr.aws/docker/library/node:20-alpine AS builder
 
 WORKDIR /app
 
 # Copy package files
 COPY client/package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copy source
 COPY client/ .
@@ -14,7 +14,7 @@ COPY client/ .
 RUN npm run build
 
 # Use Nginx for the production runtime
-FROM nginx:alpine
+FROM public.ecr.aws/nginx/nginx:alpine
 
 # Copy the built assets to Nginx
 COPY --from=builder /app/dist /usr/share/nginx/html

@@ -14,15 +14,12 @@ Parameters:
     Type: String
     Description: GitHub branch to monitor
     Default: 'main'
+  ECRRepositoryName:
+    Type: String
+    Description: Name of the existing ECR repository
+    Default: 'my-container-app'
 
 Resources:
-  # ECR Repository for our container image
-  AppRepository:
-    Type: AWS::ECR::Repository
-    Properties: 
-      RepositoryName: my-container-app
-      ImageScanningConfiguration: 
-        ScanOnPush: true
 
   # S3 Bucket for Pipeline Artifacts
   PipelineArtifactsBucket:
@@ -66,7 +63,7 @@ Resources:
           - Name: AWS_ACCOUNT_ID
             Value: !Ref AWS::AccountId
           - Name: IMAGE_REPO_NAME
-            Value: !Ref AppRepository
+            Value: !Ref ECRRepositoryName
           - Name: IMAGE_TAG
             Value: latest
       Source:
@@ -92,7 +89,7 @@ Resources:
           - Name: AWS_ACCOUNT_ID
             Value: !Ref AWS::AccountId
           - Name: IMAGE_REPO_NAME
-            Value: !Ref AppRepository
+            Value: !Ref ECRRepositoryName
           - Name: IMAGE_TAG
             Value: latest
       Source:
@@ -145,7 +142,7 @@ Resources:
                 Owner: !Ref GitHubOwner
                 Repo: !Ref GitHubRepo
                 Branch: !Ref GitHubBranch
-                OAuthToken: '{{resolve:secretsmanager:github/token:SecretString}}' # Placeholder for actual secret
+                OAuthToken: '{{resolve:secretsmanager:github/token:SecretString:token}}'
               OutputArtifacts:
                 - Name: SourceArtifact
               RunOrder: 1
