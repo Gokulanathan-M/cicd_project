@@ -4,8 +4,8 @@ phases:
   install:
     commands:
       - echo Installing Trivy for Container Scanning...
-      - wget https://github.com/aquasecurity/trivy/releases/download/v0.48.3/trivy_0.48.3_Linux-64bit.tar.gz
-      - tar -zxvf trivy_0.48.3_Linux-64bit.tar.gz
+      - curl -LO https://github.com/aquasecurity/trivy/releases/download/v0.49.1/trivy_0.49.1_Linux-64bit.tar.gz
+      - tar -zxvf trivy_0.49.1_Linux-64bit.tar.gz
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
