@@ -1,11 +1,6 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - echo Installing Trivy for Container Scanning...
-      - curl -LO https://github.com/aquasecurity/trivy/releases/download/v0.49.1/trivy_0.49.1_Linux-64bit.tar.gz
-      - tar -zxvf trivy_0.49.1_Linux-64bit.tar.gz
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
@@ -14,13 +9,18 @@ phases:
       - IMAGE_TAG=latest
   build:
     commands:
-      - echo Pulling the Docker image...
+      - echo Pulling the Docker image to scan...
       - docker pull $REPOSITORY_URI:$IMAGE_TAG
-      - echo Running Trivy vulnerability scanner in CI mode...
-      - ./trivy image --no-progress --exit-code 1 --severity CRITICAL,HIGH $REPOSITORY_URI:$IMAGE_TAG
+      - echo Running Trivy vulnerability scanner via Docker...
+      - docker run --rm
+        -v /var/run/docker.sock:/var/run/docker.sock
+        public.ecr.aws/aquasecurity/trivy:latest
+        image --no-progress --exit-code 1 --severity CRITICAL,HIGH
+        $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
-      - echo Scan completed successfully.
+      - echo Scan completed.
 artifacts:
   files:
-    - imagedefinitions.json
+    - "**/*"
+  discard-paths: no
