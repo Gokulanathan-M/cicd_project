@@ -16,6 +16,9 @@ RUN npm run build
 # Use Nginx for the production runtime
 FROM public.ecr.aws/nginx/nginx:alpine
 
+# Upgrade all packages to patch known vulnerabilities (e.g. CVE-2026-27135)
+RUN apk upgrade --no-cache
+
 # Copy the built assets to Nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
